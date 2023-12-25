@@ -1,0 +1,153 @@
+#container {
+  background: #d11450;
+  width: 100%;
+  padding: 10px 0 32px;
+  margin-bottom: 18px;
+}
+
+#wrapper {
+  position: relative;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+#background {
+  position: absolute;
+  z-index: -1;
+}
+
+#title {
+  color: #fff;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.5;
+  margin: 16px 0;
+  text-align: center;
+}
+
+#homeCalender,
+#homeRoom {
+  position: relative;
+  height: 70px;
+  border: 1px solid #999;
+  border-right: none;
+  border-left: none;
+  background-color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  z-index: 2;
+}
+
+#homeCalender {
+  width: 40%;
+  max-width: 700px;
+}
+
+/* Date Dropdown Styles */
+#dateDropDownContainer {
+  position: absolute;
+  top: calc(100%);
+  left: 0;
+  z-index: 3;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  font-size: 1rem;
+  color: #212529;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+}
+
+#dateDropDownHead {
+  color: #333;
+  padding: 18px 0 14px;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  margin: 0 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+#homebutton {
+  background: #1ab64f;
+  border: 0;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  outline: none;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 0px 30px;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Add Rooms Dropdown Styles */
+#addRoomsDropDownContainer {
+  position: absolute;
+  top: calc(100%);
+  left: 0;
+  z-index: 3;
+  min-width: 10rem;
+  width: 300px;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  font-size: 1rem;
+  color: #212529;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+}
+
+#addRoomsDropDownHead {
+  color: #333;
+  padding: 18px 0 14px;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  margin: 0 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+#searched {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  min-width: 170px;
+  margin: 0 20px 0 0;
+  text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+#searchedPlace {
+  border: 2px solid #fff;
+  border-radius: 4px;
+  font-weight: 700;
+  color: #fff;
+  font-size: 12px;
+  background-color: transparent;
+  padding: 8px;
+  margin-right: 16px;
+  cursor: pointer;
+  line-height: 20px;
+  margin-top: 5px;
+}
+
+#searchedPlace:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+}
