@@ -1,37 +1,36 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import {
   Box,
   Typography,
   Button,
   Divider,
   Paper,
+  Skeleton,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Payment = () => {
-  const data = useSelector((state) => state.bookings.data);
-  console.log({data});
+  const { loading, data, error } = useSelector((state) => state.bookings);
 
-  // if (loading) {
-  //   return (
-  //     <Box>
-  //       {[...Array(30)].map((_, index) => (
-  //         <Skeleton key={index} height="20px" />
-  //       ))}
-  //     </Box>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <Box>
+        {[...Array(30)].map((_, index) => (
+          <Skeleton key={index} height="20px" />
+        ))}
+      </Box>
+    );
+  }
 
-  // if (error) {
-  //   return (
-  //     <Box mt="50px">
-  //       <Typography color="error">
-  //         Something went wrong, please refresh
-  //       </Typography>
-  //     </Box>
-  //   );
-  // }
+  if (error) {
+    return (
+      <Box mt="50px">
+        <Typography color="error">
+          Something went wrong, please refresh
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -49,7 +48,8 @@ const Payment = () => {
             Great! Your stay is confirmed.
           </Typography>
           <Typography variant="body1" fontWeight={"500"}>
-            You will soon receive an email confirmation {data?.userDetails?.email}
+            You will soon receive an email confirmation{" "}
+            {data?.userDetails?.email}
           </Typography>{" "}
           <br />
           <Button
@@ -73,7 +73,7 @@ const Payment = () => {
             Booking ID
           </Typography>
           <Typography variant="body1" mt="5px">
-            BID{(data?._id)}
+            BID{data?._id}
           </Typography>
 
           <Divider
@@ -145,6 +145,22 @@ const Payment = () => {
               marginBottom: "20px",
             }}
           />
+          <Link to="/">
+            <Button
+              mt="30px"
+              mb="30px"
+              variant="outlined"
+              style={{
+                width: "180px",
+                height: "40px",
+                border: "2px solid",
+                background: "white",
+                color: "black",
+              }}
+            >
+              Go to Home
+            </Button>
+          </Link>
         </Paper>
       </Box>
     </Box>

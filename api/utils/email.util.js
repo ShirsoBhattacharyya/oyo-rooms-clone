@@ -57,18 +57,21 @@ const sendVerificationEmail = async (user, res) => {
     });
 
     if (newVerifiedEmail) {
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log("error:", error);
-          res.status(500).json({ message: "Something went wrong" });
-        } else {
-          console.log("Email sent:", info.response);
-          res.json({
-            success: "PENDING",
-            message:
-              "Verification email has been sent to your account. Check your email for further instructions.",
-          });
-        }
+      await new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.log("error:", error);
+            reject(error);
+          } else {
+            console.log("Email sent:", info.response);
+            resolve(info?.response);
+          }
+        });
+      });
+      res.json({
+        success: "PENDING",
+        message:
+          "Verification email has been sent to your account. Check your email for further instructions.",
       });
     }
   } catch (error) {
@@ -127,7 +130,7 @@ const resetPasswordLink = async (user, res) => {
   }
 };
 
-const confirmationEmail = async (booking, res) => {
+const confirmationEmail = async (booking) => {
   const mailOptions = {
     from: process.env.AUTH_EMAIL,
     to: booking?.userDetails?.email,
@@ -149,11 +152,10 @@ const confirmationEmail = async (booking, res) => {
         <p>Phone: ${booking?.userDetails?.phone},</p>
         <p>No of Rooms: ${booking?.roomCount},</p>
         <p>No of Guests: ${booking?.guestCount},</p>
-        <p>Amount to pay: ${booking?.price},</p>
+        <p>Amount to pay: ₹${booking?.price},</p>
         <br>
         Note: This is not the original email address of OYO. Please refrain from sharing any sensitive information. This is a cloned project built for educational purposes only by Shirso Bhattacharyya.
         Contact shirso369@gmail.com for further queries.
-    <p>This link <b>expires in 1 hour</b></p>
     <br>
     </p>
     <div style="padding-top: 20px;font-size: 16px;">
@@ -163,22 +165,20 @@ const confirmationEmail = async (booking, res) => {
 </div>`,
   };
   try {
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log("error:", error);
-        res.status(500).json({ message: "Something went wrong" });
-      } else {
-        console.log("Email sent:", info.response);
-        res.json({
-          success: "PENDING",
-          message:
-            "Booking Confirmation Email has been sent to your account. Check your email for all the booking details.",
-        });
-      }
+    await new Promise((resolve, reject) => {
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log("error:", error);
+          reject(error);
+        } else {
+          console.log("Email sent:", info?.response);
+          resolve(info?.response);
+        }
+      });
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Something went wrong" });
+    throw error;
   }
 };
 

@@ -18,8 +18,8 @@ import { HotelItem } from "../components";
 import { getHotelsFilter } from "../store/actions";
 
 const Hotels = () => {
-  let [start, setStart] = useState([0]);
-  let [end, setEnd] = useState([10000]);
+  let [start, setStart] = useState(0);
+  let [end, setEnd] = useState(10000);
   const facilityNames = [
     "Elevator",
     "TV",
@@ -52,6 +52,7 @@ const Hotels = () => {
   const [sortBy, setSortBy] = useState("rating");
   const dispatch = useDispatch();
   let page = useRef(1);
+  let currentCity = localStorage.getItem("currentCity");
 
   const handleFilter = (clickedFacility) => {
     const updatedFacilities = facilities.map((facility) =>
@@ -64,14 +65,18 @@ const Hotels = () => {
     dispatch(getHotelsFilter({ searchKey: currentCity }, page.current));
   };
 
+  const getHotelDetails = () => {
+    dispatch(getHotelsFilter({ searchKey: currentCity }, page.current));
+    const filteredHotels = hoteldata?.filter(
+      (elem) => +elem.price >= start && +elem.price <= end
+    );
+    setFilterArray(filteredHotels || []);
+  }
+  
   useEffect(() => {
-    if (!filterArray.length) {
-      dispatch(getHotelsFilter({ searchKey: currentCity }, page.current));
-    }
-    setFilterArray(hoteldata || []);
-  }, [hoteldata]);
+    getHotelDetails();
+  }, [start, end, dispatch, hoteldata, page.current, currentCity]);
 
-  let currentCity = localStorage.getItem("currentCity");
 
   const prevPage = () => {
     page.current--;
@@ -85,14 +90,16 @@ const Hotels = () => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    console.log(value);
     start = newValue[0] * 100;
     end = newValue[1] * 100;
     setStart(start);
     setEnd(end);
 
     let filterHotelData = hoteldata.filter(
-      (elem) => elem.price >= start && elem.price <= end
+      (elem) => +elem.price >= start && +elem.price <= end
     );
+    console.log({ filterHotelData });
     setFilterArray(filterHotelData);
   };
 
@@ -102,15 +109,15 @@ const Hotels = () => {
 
   switch (sortBy) {
     case "rating": {
-      filterArray?.sort((a, b) => b.rating - a.rating);
+      filterArray?.sort((a, b) => +b.rating - +a.rating);
       break;
     }
     case "lowtohigh": {
-      filterArray?.sort((a, b) => a.price - b.price);
+      filterArray?.sort((a, b) => +a.price - +b.price);
       break;
     }
     case "hightolow": {
-      filterArray?.sort((a, b) => b.price - a.price);
+      filterArray?.sort((a, b) => +b.price - +a.price);
       break;
     }
     default:

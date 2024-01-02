@@ -6,8 +6,6 @@ import PropTypes from "prop-types";
 
 const PaymentCard = ({userDetails}) => {
   const [paynow, setPayNow] = useState(false);
-  console.log("Inside PaymentCard",{userDetails});
-
   return (
     <Box
       border="1px solid gray"

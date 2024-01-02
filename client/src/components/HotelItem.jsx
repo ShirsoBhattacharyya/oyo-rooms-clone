@@ -88,7 +88,7 @@ const HotelItem = ({
           <Box display="flex">
             {/* Rendering hotel name and address */}
             <Box width="75%" display="grid">
-              <h3 className="hotelName">{hotelName}</h3>
+              <h3 className="hotelName">{hotelName}, {city}</h3>
               <Box display="flex">
                 <Box width="80%">
                   <p className="all-p-tags">{address}</p>
@@ -152,22 +152,34 @@ const HotelItem = ({
           </Box>
           <Box>
             {/* Rendering facilities */}
-            <Box display="flex" gap="2rem" marginBottom="10px" marginTop="10px" flexWrap={"wrap"}>
-              {facilities.map((facility, index) => (
-                <Box
-                  key={index}
-                  display="flex"
-                  justifyContent="space-between"
-                  gap="5px"
-                  height="35px"
-                  alignItems="center"
-                  color="#222"
-                  fontSize="15px"
-                >
-                  <Box>{facilityIcons[facility.name]}</Box>
-                  <p>{facility.name} &nbsp;</p>
-                </Box>
-              ))}
+            <Box
+              display="flex"
+              gap="2rem"
+              marginBottom="10px"
+              marginTop="10px"
+              flexWrap={"wrap"}
+            >
+              {facilities.map((facility, index) => {
+                if (facility.available === "true") {
+                  return (
+                    <Box
+                      key={index}
+                      display="flex"
+                      justifyContent="space-between"
+                      gap="5px"
+                      height="35px"
+                      alignItems="center"
+                      color="#222"
+                      fontSize="15px"
+                    >
+                      <Box>{facilityIcons[facility.name]}</Box>
+                      <p>{facility.name} &nbsp;</p>
+                    </Box>
+                  );
+                } else {
+                  return "";
+                }
+              })}
             </Box>
           </Box>
           <Box>

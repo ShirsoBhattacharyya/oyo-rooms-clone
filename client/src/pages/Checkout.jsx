@@ -10,7 +10,6 @@ import { getHotelById, getTemporaryBookingById } from "../store/actions";
 const Checkout = () => {
   const { data, loading, error } = useSelector((state) => state.hotels);
   const tempData = useSelector((state) => state.bookings.tempdata);
-  console.log({ tempData });
   if (tempData?._id) {
     localStorage.setItem("tempDataId", tempData._id);
   }
@@ -20,7 +19,6 @@ const Checkout = () => {
     email: tempData?.userDetails?.email || "",
     phone: tempData?.userDetails?.phone || "",
   });
-  console.log({ userDetailsObject });
   const handleChangeUserDetailsObject = (e) => {
     let { name, value } = e.target;
     setUserDetailsObject({ ...userDetailsObject, [name]: value });

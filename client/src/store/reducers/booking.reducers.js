@@ -26,7 +26,7 @@ export const bookingReducer = (state = initialState, { type, payload }) => {
       return { ...state, loading: true };
     }
     case BOOKING_GET_SUCCESS: {
-      return { ...state, loading: false, data: payload };
+      return { ...state, loading: false, data: payload, error: false };
     }
     case BOOKING_GET_FAILURE: {
       return { ...state, loading: false, error: true };
@@ -35,7 +35,7 @@ export const bookingReducer = (state = initialState, { type, payload }) => {
       return { ...state, loading: true };
     }
     case BOOKING_POST_SUCCESS: {
-      return { ...state, loading: false, data: payload };
+      return { ...state, loading: false, data: payload, error: false };
     }
     case BOOKING_POST_FAILURE: {
       return { ...state, loading: false, error: true };
@@ -44,7 +44,7 @@ export const bookingReducer = (state = initialState, { type, payload }) => {
       return { ...state, loading: true };
     }
     case TEMPORARY_BOOKING_GET_SUCCESS: {
-      return { ...state, loading: false, tempdata: payload };
+      return { ...state, loading: false, tempdata: payload, error: false };
     }
     case TEMPORARY_BOOKING_GET_FAILURE: {
       return { ...state, loading: false, error: true };
@@ -53,7 +53,7 @@ export const bookingReducer = (state = initialState, { type, payload }) => {
       return { ...state, loading: true };
     }
     case TEMPORARY_BOOKING_POST_SUCCESS: {
-      return { ...state, loading: false, tempdata: payload };
+      return { ...state, loading: false, tempdata: payload, error: false };
     }
     case TEMPORARY_BOOKING_POST_FAILURE: {
       return { ...state, loading: false, error: true };

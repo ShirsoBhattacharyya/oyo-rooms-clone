@@ -26,7 +26,6 @@ const PayAtHotel = ({ userDetails }) => {
     paymentStatus: "Not Paid",
   });
   const dispatch = useDispatch();
-  console.log("Inside PayAtHotel", { userDetails });
 
   const handleCreateBooking = () => {
     setBookingObject({
@@ -45,6 +44,7 @@ const PayAtHotel = ({ userDetails }) => {
       paymentStatus: "Not Paid",
     });
     dispatch(createBooking(bookingObject));
+    localStorage?.clear();
     navigate(`/payment/${id}`);
   };
 

@@ -6,7 +6,7 @@ const PrivateRoute = ({ children }) => {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
-  if (!user?.existingData?.token) {
+  if (!user?.data?.token) {
     navigate("/login");
   }
   return <div>{children}</div>;
