@@ -4,25 +4,40 @@ import Visibility from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LoginSignupNavbar } from "../components";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./styles/Common.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../store/actions";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [checkValidEmail, setCheckValidEmail] = useState("");
+  const [checkValidEmail, setCheckValidEmail] = useState(null);
   const [inputFieldData, setInputFieldData] = useState({
     name: "",
     email: "",
     password: "",
   });
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loadingToastId, setLoadingToastId] = useState(null);
+  const { loading } = useSelector((state) => state.user);
+  useEffect(() => {
+    if (loading) {
+      setLoadingToastId(
+        toast.loading("Wait a moment..", {
+          position: "top-center",
+          theme: "colored",
+        })
+      );
+    } else {
+      if (loadingToastId) {
+        toast.dismiss(loadingToastId);
+      }
+    }
+  }, [loading]);
   const regex =
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+$/;
   const handleClickShowPassword = () => setShowPassword(true);
   const handleMouseDownPassword = () => setShowPassword(false);
 
@@ -32,11 +47,10 @@ const Register = () => {
       [e.target.name]: e.target.value,
     });
     if (regex.test(inputFieldData.email)) {
-      setCheckValidEmail("");
+      setCheckValidEmail(null);
     } else {
-      setCheckValidEmail("Please enter a valid email");
+      setCheckValidEmail("Please enter a valid email address");
     }
-    console.log(checkValidEmail);
   };
   const handleRegistration = async (e) => {
     e.preventDefault();
@@ -51,22 +65,39 @@ const Register = () => {
       inputFieldData.password === ""
     ) {
       toast.info("Please fill all the fields", {
-        position: "top-center",
-        theme: "dark",
+        position: "bottom-center",
+        theme: "colored",
       });
       return;
     }
-
-    toast.success("Account created successfully", {
-      position: "top-center",
-      theme: "colored",
+    if (checkValidEmail) {
+      toast.warning(checkValidEmail, {
+        position: "top-center",
+        theme: "colored",
+      });
+      return;
+    }
+    dispatch(registerUser(inputFieldData)).then((res) => {
+      if (res?.data?.status === 200) {
+        toast.success(res?.data?.message, {
+          position: "top-center",
+          theme: "colored",
+        });
+      } else if (res?.data?.status === 500) {
+        toast.error(res?.data?.message, {
+          position: "top-center",
+          theme: "colored",
+        });
+      } else {
+        toast.warning(res?.data?.message, {
+          position: "top-center",
+          theme: "colored",
+        });
+      }
+      if (loadingToastId) {
+        toast.dismiss(loadingToastId);
+      }
     });
-    // send data to backend for register new user
-    dispatch(registerUser(inputFieldData));
-
-    setTimeout(() => {
-      navigate("/login");
-    }, 2000);
   };
   const { name, email, password } = inputFieldData;
   return (
@@ -101,7 +132,8 @@ const Register = () => {
                 margin="normal"
                 padding="0"
                 label="Name"
-                placeholder="Enter Name......"
+                placeholder="Enter Name"
+                required={true}
                 name="name"
                 value={name}
               />{" "}
@@ -111,15 +143,12 @@ const Register = () => {
                 margin="normal"
                 padding="0"
                 label="Email"
-                placeholder="Enter Email...."
+                placeholder="Enter Email"
                 name="email"
-                required
+                required={true}
                 type="email"
                 value={email}
               />{" "}
-              {/* <p style={{ color: "red", marginLeft: "5px" }}>
-                {checkValidEmail}
-              </p> */}
               <TextField
                 onChange={(e) => handleChangeInputField(e)}
                 size="small"
@@ -128,7 +157,7 @@ const Register = () => {
                 placeholder="Enter Password"
                 name="password"
                 value={password}
-                required
+                required={true}
                 type={showPassword ? "text" : "password"}
                 InputProps={{
                   endAdornment: (
@@ -144,10 +173,9 @@ const Register = () => {
                 }}
               />{" "}
               <Button
-                disabled={password.length < 8 ? true : false}
+                // disabled={password.length < 7 ? true : false}
                 onClick={handleRegistration}
                 variant="contained"
-                // color="warning"
                 id="SignupButton"
                 margin="normal"
                 sx={{
@@ -161,12 +189,10 @@ const Register = () => {
               >
                 Register
               </Button>
-              {/* <Google /> */}
               <p
                 style={{
                   padding: "0px",
                   marginTop: "15px",
-                  // border: "2px solid red",
                 }}
               >
                 Prefer to Sign in with password instead ?{" "}
@@ -185,7 +211,7 @@ const Register = () => {
           </form>
         </div>
       </div>
-      <ToastContainer />
+      <ToastContainer position="top-center" />
     </div>
   );
 };

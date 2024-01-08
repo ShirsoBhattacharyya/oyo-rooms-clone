@@ -2,7 +2,7 @@ import { Button, TextField, InputAdornment } from "@mui/material";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect, useState } from "react";
 import "./styles/Common.css";
@@ -13,8 +13,8 @@ import { loginUser } from "../store/actions";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { user } = useSelector((state) => state.user);
-  console.log({user});
+  const [loadingToastId, setLoadingToastId] = useState(null);
+  const { loading, user } = useSelector((state) => state.user);
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
@@ -24,17 +24,61 @@ const Login = () => {
       ...credentials,
       [e.target.name]: e.target.value,
     });
-    console.log(credentials);
   };
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   useEffect(() => {
-    if (user?.data?.token) {
-      return navigate("/");
+    if (user?.token) {
+      setTimeout(() => {
+        return navigate("/");
+      }, 1000);
     }
   }, [navigate, user]);
+
+  useEffect(() => {
+    if (loading) {
+      setLoadingToastId(
+        toast.loading("Wait a moment..", {
+          position: "top-center",
+          theme: "colored",
+        })
+      );
+    } else {
+      if (loadingToastId) {
+        toast.dismiss(loadingToastId);
+      }
+    }
+  }, [loading]);
   const handleLogin = () => {
-    dispatch(loginUser(credentials));
+    if (credentials?.email === "" || credentials?.password === "") {
+      toast.info("You cannot leave any field empty.", {
+        position: "top-center",
+        theme: "colored",
+      });
+      return;
+    }
+    dispatch(loginUser(credentials)).then((res) => {
+      if (res?.data?.status === 200) {
+        toast.success(res?.data?.message, {
+          position: "top-center",
+          theme: "colored",
+        });
+      } else if (res?.data?.status === 500) {
+        toast.error(res?.data?.message, {
+          position: "top-center",
+          theme: "colored",
+        });
+      } else {
+        toast.warning(res?.data?.message, {
+          position: "top-center",
+          theme: "colored",
+        });
+      }
+      if (loadingToastId) {
+        toast.dismiss(loadingToastId);
+      }
+    });
   };
   return (
     <div id="wrap-main-div">

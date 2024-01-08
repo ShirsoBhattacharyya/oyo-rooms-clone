@@ -14,10 +14,13 @@ import {
 } from "../types";
 
 const initialState = {
+  status: null,
+  loading: false,
+  success: false,
+  error: false,
   data: [],
   tempdata: [],
-  loading: false,
-  error: false,
+  message: null,
 };
 
 export const bookingReducer = (state = initialState, { type, payload }) => {

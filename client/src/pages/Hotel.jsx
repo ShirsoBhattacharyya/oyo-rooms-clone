@@ -450,7 +450,7 @@ const Hotel = () => {
             </div>
             {/* Checkout section */}
             <div style={{ border: "1px solid rgb(240,240,240)" }}>
-              {user?.data?.token ? (
+              {user?.token ? (
                 ""
               ) : (
                 <div

@@ -7,18 +7,19 @@ import "./styles/Header.css";
 const Header = () => {
   const [dropdown, setDropdown] = useState(false);
   let dispatch = useDispatch();
-  let loggedInUser = useSelector((store) => {
-    return store.user.user;
-  });
-  let currentUser = useSelector((state) => state.user.user);
-  const token = currentUser?.data?.token;
+  let { user } = useSelector((state) => state.user);
+  const token = JSON.parse(localStorage.getItem("user"))?.token || user?.token;
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    token && getUserDetails();
+  }, [token]);
 
-  const fetchData = async () => {
-    dispatch(getUser(token));
+  const getUserDetails = async () => {
+    dispatch(getUser(token)).then((res) => {
+      if (res?.data?.status === 401) {
+        dispatch(logoutUser());
+      }
+    });
   };
 
   const handleLogout = () => {
@@ -30,7 +31,7 @@ const Header = () => {
       style={{
         position: "sticky",
         top: "0px",
-        zIndex: "100000",
+        zIndex: "100",
         backgroundColor: "white",
       }}
     >
@@ -61,10 +62,10 @@ const Header = () => {
             onMouseLeave={() => setDropdown(false)}
             style={{ position: "relative" }}
           >
-            {loggedInUser !== null ? (
+            {user !== null ? (
               <Link to="/profile" className="login-signup" id="loginBox">
                 <img src="/assets/images/profile.png" alt="profile" />
-                <p>Welcome, {currentUser?.data?.existingUser?.name}</p>
+                <p>Welcome, {user?.existingUser?.name}</p>
               </Link>
             ) : (
               <Link to="/login" className="login-signup" id="loginBox">
@@ -72,7 +73,7 @@ const Header = () => {
                 <p>Login / Signup</p>
               </Link>
             )}
-            {dropdown && loggedInUser !== null ? (
+            {dropdown && user !== null ? (
               <div onMouseEnter={() => setDropdown(true)} id="profileDropdown">
                 <Link to="/profile">Profile</Link>
                 <Link to="/profile">Wallet</Link>

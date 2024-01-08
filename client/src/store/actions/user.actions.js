@@ -25,12 +25,11 @@ export const registerUser = (user) => async (dispatch) => {
   dispatch({ type: USER_REGISTER_LOADING });
   try {
     const res = await axios.post(`${OYO_URL}/auth/register`, user);
-    console.log(res.data.message);
-    dispatch({ type: USER_REGISTER_SUCCESS, payload: res.data.message });
+    dispatch({ type: USER_REGISTER_SUCCESS, payload: res.data });
     return res;
   } catch (e) {
     dispatch({ type: USER_REGISTER_FAILURE });
-    return Promise.reject(e);
+    return Promise.reject(e?.response?.data);
   }
 };
 
@@ -42,7 +41,7 @@ export const loginUser = (user) => async (dispatch) => {
     return res;
   } catch (e) {
     dispatch({ type: USER_LOGIN_FAILURE });
-    return Promise.reject(e);
+    return Promise.reject(e?.response?.data);
   }
 };
 
@@ -67,7 +66,7 @@ export const getUser = (token) => async (dispatch) => {
     return res;
   } catch (e) {
     dispatch({ type: USER_GET_FAILURE });
-    return Promise.reject(e);
+    return Promise.reject(e?.response?.data);
   }
 };
 
@@ -84,7 +83,7 @@ export const updateUser =
       return res;
     } catch (e) {
       dispatch({ type: USER_UPDATE_FAILURE });
-      return Promise.reject(e);
+      return Promise.reject(e?.response?.data);
     }
   };
 
@@ -96,6 +95,6 @@ export const deleteUser = (id) => async (dispatch) => {
     return res;
   } catch (e) {
     dispatch({ type: USER_DELETE_FAILURE });
-    return Promise.reject(e);
+    return Promise.reject(e?.response?.data);
   }
 };

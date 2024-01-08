@@ -10,11 +10,11 @@ const History = () => {
   const bookingsData = useSelector((state) => state.bookings.data);
   useEffect(() => {
     user?.data?.token && getUserDetails();
-    dispatch(getBookingsFilter({ email: user?.data?.existingUser?.email }));
+    dispatch(getBookingsFilter({ email: user?.existingUser?.email }));
   }, [user, dispatch]);
 
   const getUserDetails = async () => {
-    const token = user?.data?.token;
+    const token = user?.token;
     dispatch(getUser(token));
   };
   return (

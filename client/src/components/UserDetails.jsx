@@ -14,11 +14,13 @@ import "react-toastify/dist/ReactToastify.css";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
-import { getUser, updateUser } from "../store/actions/user.actions";
+import { getUser, logoutUser, updateUser } from "../store/actions";
+import { useNavigate } from "react-router-dom";
 
 const UserDetails = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user);
+  const [loadingToastId, setLoadingToastId] = useState(null);
+  const { loading, user } = useSelector((state) => state.user);
   const [userShow, setUserShow] = useState(false);
   const [password, setPassword] = useState(false);
   const [show, setShow] = useState(false);
@@ -26,30 +28,70 @@ const UserDetails = () => {
     newPass: null,
     newPass2: "",
   });
+  const token = JSON.parse(localStorage.getItem("user"))?.token || user?.token;
+  const navigate = useNavigate();
 
   useEffect(() => {
-    user?.data?.token && getUserDetails();
-  }, [user]);
+    token && getUserDetails();
+  }, []);
 
   const getUserDetails = async () => {
-    const token = user?.data?.token;
-    dispatch(getUser(token));
+    dispatch(getUser(token)).then((res) => {
+      if (res?.data?.status === 401) {
+        dispatch(logoutUser());
+        navigate("/login");
+      }
+    });
   };
 
-  const nameRef = useRef(null);
-  const emailRef = useRef(null);
-  const phoneRef = useRef(null);
+  useEffect(() => {
+    if (loading) {
+      setLoadingToastId(
+        toast.loading("Wait a moment..", {
+          position: "top-center",
+          theme: "colored",
+        })
+      );
+    } else {
+      if (loadingToastId) {
+        toast.dismiss(loadingToastId);
+      }
+    }
+  }, [loading]);
+
+  const [nameRef, setNameRef] = useState(user?.existingUser?.name);
+  const [phoneRef, setPhoneRef] = useState(user?.existingUser?.phone);
   const passRef = useRef(null);
 
   const updateUserDetails = async () => {
     const updatedUser = {
-      name: nameRef.current.value,
-      phone: phoneRef.current.value,
-      email: emailRef.current.value + "@gmail.com",
+      name: nameRef,
+      phone: phoneRef,
     };
-    dispatch(updateUser(user?.data?.existingUser?._id, updatedUser));
+    const token = user?.token;
+    dispatch(updateUser(user?.existingUser?._id, updatedUser)).then((res) => {
+      if (res?.data?.status === 200) {
+        toast.success(res?.data?.message, {
+          position: "top-center",
+          theme: "colored",
+        });
+      } else if (res?.data?.status === 500) {
+        toast.error(res?.data?.message, {
+          position: "top-center",
+          theme: "colored",
+        });
+      } else {
+        toast.warning(res?.data?.message, {
+          position: "top-center",
+          theme: "colored",
+        });
+      }
+      if (loadingToastId) {
+        toast.dismiss(loadingToastId);
+      }
+    });
     setUserShow(!userShow);
-    dispatch(getUser(user?.data?.token));
+    dispatch(getUser(token));
   };
 
   const updatePassword = async () => {
@@ -59,17 +101,38 @@ const UserDetails = () => {
     };
 
     if (myPass.newPass === myPass.newPass2) {
-      dispatch(updateUser(user?.data?.existingUser?._id, updatedUser, "UPDATE_PASSWORD"));
+      dispatch(
+        updateUser(user?.existingUser?._id, updatedUser, "UPDATE_PASSWORD")
+      ).then((res) => {
+        console.log({ res });
+        if (res?.data?.status === 200) {
+          toast.success(res?.data?.message, {
+            position: "top-center",
+            theme: "colored",
+          });
+        } else if (res?.data?.status === 500) {
+          toast.error(res?.data?.message, {
+            position: "top-center",
+            theme: "colored",
+          });
+        } else {
+          toast.warning(res?.data?.message, {
+            position: "top-center",
+            theme: "colored",
+          });
+        }
+        if (loadingToastId) {
+          toast.dismiss(loadingToastId);
+        }
+      });
       setPassword(!password);
-      toast.success("Password successfully updated", {
+      dispatch(getUser(token));
+    } else {
+      toast.error("Passwords do not match. Please retry again.", {
         position: "top-center",
         theme: "colored",
       });
-    } else {
-      toast.info("Password did not change. Please retry again.", {
-        position: "top-center",
-        theme: "dark",
-      });
+      dispatch(getUser(token));
     }
   };
 
@@ -118,11 +181,11 @@ const UserDetails = () => {
               htmlSize={8}
               width="auto"
               placeholder="Enter Name"
-              inputRef={nameRef}
-              value={user?.data?.existingUser?.name}
+              onChange={(e) => setNameRef(e.target.value)}
+              value={nameRef}
             />
-          ) : user?.data?.existingUser?.name != null ? (
-            user?.data?.existingUser?.name
+          ) : user?.existingUser?.name !== null ? (
+            user?.existingUser?.name
           ) : (
             ""
           )}
@@ -136,11 +199,11 @@ const UserDetails = () => {
               htmlSize={8}
               width="auto"
               placeholder="Enter Phone Number"
-              inputRef={phoneRef}
-              value={user?.data?.existingUser?.phone}
+              onChange={(e) => setPhoneRef(e.target.value)}
+              value={phoneRef}
             />
-          ) : user?.data?.existingUser?.phone != null ? (
-            user?.data?.existingUser?.phone
+          ) : user?.existingUser?.phone !== null ? (
+            user?.existingUser?.phone
           ) : (
             ""
           )}
@@ -152,14 +215,13 @@ const UserDetails = () => {
           {userShow ? (
             <Input
               placeholder="Enter Email"
-              inputRef={emailRef}
               endAdornment={
                 <InputAdornment position="end">@gmail.com</InputAdornment>
               }
-              value={user?.data?.existingUser?.email.split("@")[0]}
+              value={user?.existingUser?.email?.split("@")[0]}
             />
-          ) : user?.data?.existingUser?.email != null ? (
-            user?.data?.existingUser?.email
+          ) : user?.existingUser?.email !== null ? (
+            user?.existingUser?.email
           ) : (
             ""
           )}
@@ -258,7 +320,6 @@ const UserDetails = () => {
               cursor: "pointer",
             }}
             onClick={updatePassword}
-            disabled={myPass.newPass === myPass.newPass2 ? false : true}
           >
             Update
           </Button>
@@ -266,7 +327,7 @@ const UserDetails = () => {
           ""
         )}
       </Box>
-      <ToastContainer />
+      <ToastContainer style={{ zIndex: 110 }} />
     </div>
   );
 };

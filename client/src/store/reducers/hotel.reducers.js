@@ -8,9 +8,12 @@ import {
 } from "../types";
 
 const initialState = {
-  data: [],
+  status: null,
   loading: false,
+  success: false,
   error: false,
+  data: [],
+  message: null,
 };
 
 export const hotelReducer = (state = initialState, { type, payload }) => {
